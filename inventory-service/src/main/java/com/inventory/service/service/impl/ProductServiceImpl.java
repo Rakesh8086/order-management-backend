@@ -94,6 +94,16 @@ public class ProductServiceImpl implements ProductService{
 	    // return "Product updated Successfully!";
 	}
 	
+	@Override
+	public void softDeleteProduct(Long id) {
+		Product product = productRepository.findById(id)
+		        .orElseThrow(() -> 
+		        new ResourceNotFoundException(
+		        		"Product not found with Id: " + id));
+		product.setIsActive(false);
+		productRepository.save(product);
+	}
+	
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();
         product.setName(request.getName());

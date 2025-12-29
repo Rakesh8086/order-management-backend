@@ -11,4 +11,5 @@ public interface ProductService {
 	List<ProductResponse> getAllProducts();
 	List<ProductResponseAdmin> getAllProductsForAdmin();
 	void updateProduct(Long id, ProductRequest request);
+	void softDeleteProduct(Long id);
 }

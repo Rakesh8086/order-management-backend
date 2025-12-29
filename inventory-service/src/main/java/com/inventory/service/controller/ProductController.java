@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -57,5 +58,13 @@ public class ProductController {
     		@PathVariable Long id, @Valid @RequestBody ProductRequest request){
     	productService.updateProduct(id, request);
     	return ResponseEntity.ok("Product updated successfully");
+    }
+    
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<String> softDeleteProduct(
+    		@PathVariable Long id){
+    	productService.softDeleteProduct(id);
+    	return ResponseEntity.ok("Product deactivated. It would no longer "
+    			+ "be available for customers");
     }
 }
