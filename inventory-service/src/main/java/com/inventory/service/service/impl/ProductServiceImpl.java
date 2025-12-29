@@ -10,6 +10,7 @@ import com.inventory.service.entity.Inventory;
 import com.inventory.service.entity.Product;
 import com.inventory.service.exception.ResourceNotFoundException;
 import com.inventory.service.repository.ProductRepository;
+import com.inventory.service.request.AdvancedFilterRequest;
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
 import com.inventory.service.response.ProductResponseAdmin;
@@ -130,6 +131,26 @@ public class ProductServiceImpl implements ProductService{
 		
 		return responses;
 	} 
+	
+	@Override
+	public List<ProductResponse> getAllByAdvancedFilter(
+			AdvancedFilterRequest request){
+		List<Product> allProducts = productRepository.findByOptionalParams(
+					request.getName(), request.getBrand(),
+					request.getFinalPrice(), request.getDiscount()
+				);
+		List<ProductResponse> responses = new ArrayList<>();
+		for(Product prod: allProducts) {
+    		ProductResponse response = mapEntityToDto(prod);
+    		if(!response.getIsActive()) {
+    			continue;
+    		}
+    		responses.add(response);
+    	}
+		
+		return responses;
+	}
+
 	
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();

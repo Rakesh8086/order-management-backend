@@ -2,6 +2,7 @@ package com.inventory.service.service;
 
 import java.util.List;
 
+import com.inventory.service.request.AdvancedFilterRequest;
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
 import com.inventory.service.response.ProductResponseAdmin;
@@ -14,4 +15,5 @@ public interface ProductService {
 	void softDeleteProduct(Long id);
 	ProductResponseAdmin getById(Long id);
 	List<ProductResponse> getAllByName(String name);
+	List<ProductResponse> getAllByAdvancedFilter(AdvancedFilterRequest request);
 }

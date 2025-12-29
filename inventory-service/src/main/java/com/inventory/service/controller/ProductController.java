@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.inventory.service.request.AdvancedFilterRequest;
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
 import com.inventory.service.response.ProductResponseAdmin;
@@ -85,6 +86,17 @@ public class ProductController {
     	ResponseEntity<List<ProductResponse>> allProducts =  
     			new ResponseEntity<>(
     			productService.getAllByName(name), 
+    			HttpStatus.OK);
+    	
+    	return allProducts;
+    }
+    
+    @GetMapping("/all/filter")
+    public ResponseEntity<List<ProductResponse>> getAllByAdvancedFilter(
+    		@RequestBody AdvancedFilterRequest request){
+    	ResponseEntity<List<ProductResponse>> allProducts =  
+    			new ResponseEntity<>(
+    			productService.getAllByAdvancedFilter(request), 
     			HttpStatus.OK);
     	
     	return allProducts;
