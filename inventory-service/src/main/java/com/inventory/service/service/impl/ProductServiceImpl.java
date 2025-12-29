@@ -1,11 +1,15 @@
 package com.inventory.service.service.impl;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.stereotype.Service;
 
 import com.inventory.service.entity.Inventory;
 import com.inventory.service.entity.Product;
 import com.inventory.service.repository.ProductRepository;
 import com.inventory.service.request.ProductRequest;
+import com.inventory.service.response.ProductResponse;
 import com.inventory.service.service.ProductService;
 
 import jakarta.transaction.Transactional;
@@ -16,8 +20,9 @@ import lombok.RequiredArgsConstructor;
 public class ProductServiceImpl implements ProductService{
 	private final ProductRepository productRepository;
 
+	@Override
     @Transactional
-    public Long createProduct(ProductRequest request) {
+    public Long createProduct(ProductRequest request){
     	// DTO to Entity
         Product product = mapDtoToEntity(request);
         Inventory inventory = new Inventory();
@@ -34,6 +39,18 @@ public class ProductServiceImpl implements ProductService{
         return product.getId();
     }
     
+	@Override
+    public List<ProductResponse> getAllProducts(){
+    	List<Product> allProducts = productRepository.findAll();
+    	List<ProductResponse> allResponses = new ArrayList<>();
+    	for(Product prod: allProducts) {
+    		ProductResponse response = mapEntityToDto(prod);
+    		allResponses.add(response);
+    	}
+    	
+    	return allResponses;
+    }
+    
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();
         product.setName(request.getName());
@@ -44,5 +61,23 @@ public class ProductServiceImpl implements ProductService{
         product.setDiscount(request.getDiscount());
         
         return product;
+    }
+    
+    private ProductResponse mapEntityToDto(Product product) {
+    	ProductResponse response = new ProductResponse();
+    	response.setName(product.getName());
+    	response.setDescription(product.getDescription());
+    	response.setBrand(product.getBrand());
+    	response.setCategory(product.getCategory());
+    	response.setPrice(product.getPrice());
+    	response.setDiscount(product.getDiscount());
+    	Double finalPrice = product.getPrice() - 
+    			(product.getPrice()/100) * product.getDiscount();
+    	response.setFinalPrice(finalPrice);
+    	if(product.getInventory() != null) {
+            response.setCurrentStock(product.getInventory().getCurrentStock());
+        }
+    	
+    	return response;
     }
 }

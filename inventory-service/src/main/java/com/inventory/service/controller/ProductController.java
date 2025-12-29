@@ -1,13 +1,17 @@
 package com.inventory.service.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.inventory.service.request.ProductRequest;
+import com.inventory.service.response.ProductResponse;
 import com.inventory.service.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -22,5 +26,15 @@ public class ProductController {
     @PostMapping("/add")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductRequest request) {
         return new ResponseEntity<>(productService.createProduct(request), HttpStatus.CREATED);
+    }
+    
+    @GetMapping("/all")
+    public ResponseEntity<List<ProductResponse>> getAllProducts(){
+    	ResponseEntity<List<ProductResponse>> allProducts =  
+    			new ResponseEntity<>(
+    			productService.getAllProducts(), 
+    			HttpStatus.OK);
+    	
+    	return allProducts;
     }
 }
