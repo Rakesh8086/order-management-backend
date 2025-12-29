@@ -67,4 +67,15 @@ public class ProductController {
     	return ResponseEntity.ok("Product deactivated. It would no longer "
     			+ "be available for customers");
     }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<ProductResponseAdmin> 
+    getById(@PathVariable Long id){
+    	ResponseEntity<ProductResponseAdmin> Product =  
+    			new ResponseEntity<>(
+    			productService.getById(id), 
+    			HttpStatus.OK);
+    	
+    	return Product;
+    }
 }

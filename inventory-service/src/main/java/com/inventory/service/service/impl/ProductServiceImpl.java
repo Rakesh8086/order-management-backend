@@ -2,6 +2,7 @@ package com.inventory.service.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -102,6 +103,17 @@ public class ProductServiceImpl implements ProductService{
 		        		"Product not found with Id: " + id));
 		product.setIsActive(false);
 		productRepository.save(product);
+	}
+	
+	@Override
+	public ProductResponseAdmin getById(Long id) {
+		Optional<Product> product = productRepository.findById(id);
+		if(!product.isPresent()) {
+			throw new ResourceNotFoundException(
+	        		"Product not found with Id: " + id);
+		}
+		   
+		return mapEntityToDtoForAdmin(product.get());
 	}
 	
     private Product mapDtoToEntity(ProductRequest request) {
