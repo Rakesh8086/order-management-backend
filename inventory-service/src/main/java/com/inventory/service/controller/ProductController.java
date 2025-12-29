@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
+import com.inventory.service.response.ProductResponseAdmin;
 import com.inventory.service.service.ProductService;
 
 import jakarta.validation.Valid;
@@ -33,6 +34,17 @@ public class ProductController {
     	ResponseEntity<List<ProductResponse>> allProducts =  
     			new ResponseEntity<>(
     			productService.getAllProducts(), 
+    			HttpStatus.OK);
+    	
+    	return allProducts;
+    }
+    
+    @GetMapping("/all/admin")
+    public ResponseEntity<List<ProductResponseAdmin>> 
+    getAllProductsForAdmin(){
+    	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
+    			new ResponseEntity<>(
+    			productService.getAllProductsForAdmin(), 
     			HttpStatus.OK);
     	
     	return allProducts;

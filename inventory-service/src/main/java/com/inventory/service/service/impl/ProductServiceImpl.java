@@ -10,6 +10,7 @@ import com.inventory.service.entity.Product;
 import com.inventory.service.repository.ProductRepository;
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
+import com.inventory.service.response.ProductResponseAdmin;
 import com.inventory.service.service.ProductService;
 
 import jakarta.transaction.Transactional;
@@ -50,6 +51,19 @@ public class ProductServiceImpl implements ProductService{
     	
     	return allResponses;
     }
+	
+	@Override
+    public List<ProductResponseAdmin> getAllProductsForAdmin(){
+    	List<Product> allProducts = productRepository.findAll();
+    	List<ProductResponseAdmin> allResponses = new ArrayList<>();
+    	for(Product prod: allProducts) {
+    		ProductResponseAdmin response = 
+    				mapEntityToDtoForAdmin(prod);
+    		allResponses.add(response);
+    	}
+    	
+    	return allResponses;
+    }
     
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();
@@ -76,6 +90,26 @@ public class ProductServiceImpl implements ProductService{
     	response.setFinalPrice(finalPrice);
     	if(product.getInventory() != null) {
             response.setCurrentStock(product.getInventory().getCurrentStock());
+        }
+    	
+    	return response;
+    }
+    
+    private ProductResponseAdmin mapEntityToDtoForAdmin(Product product) {
+    	ProductResponseAdmin response = new ProductResponseAdmin();
+    	response.setName(product.getName());
+    	response.setDescription(product.getDescription());
+    	response.setBrand(product.getBrand());
+    	response.setCategory(product.getCategory());
+    	response.setPrice(product.getPrice());
+    	response.setDiscount(product.getDiscount());
+    	Double finalPrice = product.getPrice() - 
+    			(product.getPrice()/100) * product.getDiscount();
+    	response.setFinalPrice(finalPrice);
+    	response.setId(product.getId());
+    	if(product.getInventory() != null) {
+    		response.setMinStockLevel(product.getInventory().getMinStockLevel());
+    		response.setCurrentStock(product.getInventory().getCurrentStock());
         }
     	
     	return response;
