@@ -16,4 +16,5 @@ public class ProductResponse {
     private Double discount;
     private Double finalPrice;
     private int currentStock; 
+    private Boolean isActive;
 }

@@ -46,6 +46,9 @@ public class ProductServiceImpl implements ProductService{
     	List<ProductResponse> allResponses = new ArrayList<>();
     	for(Product prod: allProducts) {
     		ProductResponse response = mapEntityToDto(prod);
+    		if(!response.getIsActive()) {
+    			continue;
+    		}
     		allResponses.add(response);
     	}
     	
@@ -59,6 +62,9 @@ public class ProductServiceImpl implements ProductService{
     	for(Product prod: allProducts) {
     		ProductResponseAdmin response = 
     				mapEntityToDtoForAdmin(prod);
+    		if(!response.getIsActive()) {
+    			continue;
+    		}
     		allResponses.add(response);
     	}
     	
@@ -73,6 +79,7 @@ public class ProductServiceImpl implements ProductService{
         product.setCategory(request.getCategory());
         product.setPrice(request.getPrice());
         product.setDiscount(request.getDiscount());
+        product.setIsActive(request.getIsActive());
         
         return product;
     }
@@ -91,6 +98,7 @@ public class ProductServiceImpl implements ProductService{
     	if(product.getInventory() != null) {
             response.setCurrentStock(product.getInventory().getCurrentStock());
         }
+    	response.setIsActive(product.getIsActive());
     	
     	return response;
     }
@@ -111,6 +119,7 @@ public class ProductServiceImpl implements ProductService{
     		response.setMinStockLevel(product.getInventory().getMinStockLevel());
     		response.setCurrentStock(product.getInventory().getCurrentStock());
         }
+    	response.setIsActive(product.getIsActive());
     	
     	return response;
     }

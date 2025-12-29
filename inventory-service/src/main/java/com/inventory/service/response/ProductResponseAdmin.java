@@ -18,4 +18,5 @@ public class ProductResponseAdmin {
     private Double finalPrice;
     private int currentStock; 
     private int minStockLevel;
+    private Boolean isActive;
 }
