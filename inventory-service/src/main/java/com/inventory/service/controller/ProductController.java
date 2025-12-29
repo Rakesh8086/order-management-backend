@@ -78,4 +78,15 @@ public class ProductController {
     	
     	return Product;
     }
+    
+    @GetMapping("/all/{name}")
+    public ResponseEntity<List<ProductResponse>> getAllByName(
+    		@PathVariable String name){
+    	ResponseEntity<List<ProductResponse>> allProducts =  
+    			new ResponseEntity<>(
+    			productService.getAllByName(name), 
+    			HttpStatus.OK);
+    	
+    	return allProducts;
+    }
 }

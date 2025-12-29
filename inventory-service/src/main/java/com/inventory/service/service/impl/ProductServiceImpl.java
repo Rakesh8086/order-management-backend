@@ -116,6 +116,21 @@ public class ProductServiceImpl implements ProductService{
 		return mapEntityToDtoForAdmin(product.get());
 	}
 	
+	@Override
+	public List<ProductResponse> getAllByName(String name){
+		List<Product> allProducts = productRepository.findAllByName(name);
+		List<ProductResponse> responses = new ArrayList<>();
+		for(Product prod: allProducts) {
+    		ProductResponse response = mapEntityToDto(prod);
+    		if(!response.getIsActive()) {
+    			continue;
+    		}
+    		responses.add(response);
+    	}
+		
+		return responses;
+	} 
+	
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();
         product.setName(request.getName());

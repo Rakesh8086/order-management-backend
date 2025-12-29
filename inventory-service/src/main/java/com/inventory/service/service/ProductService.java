@@ -13,4 +13,5 @@ public interface ProductService {
 	void updateProduct(Long id, ProductRequest request);
 	void softDeleteProduct(Long id);
 	ProductResponseAdmin getById(Long id);
+	List<ProductResponse> getAllByName(String name);
 }
