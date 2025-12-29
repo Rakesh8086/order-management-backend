@@ -10,4 +10,5 @@ public interface ProductService {
 	Long createProduct(ProductRequest request);
 	List<ProductResponse> getAllProducts();
 	List<ProductResponseAdmin> getAllProductsForAdmin();
+	void updateProduct(Long id, ProductRequest request);
 }

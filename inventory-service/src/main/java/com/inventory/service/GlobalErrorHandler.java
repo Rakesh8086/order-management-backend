@@ -10,6 +10,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.inventory.service.exception.ResourceNotFoundException;
+
 @ControllerAdvice
 public class GlobalErrorHandler {
 	@ExceptionHandler(MethodArgumentNotValidException.class)
@@ -29,5 +31,10 @@ public class GlobalErrorHandler {
         
         // 400 Bad request
         return new ResponseEntity<>(errorMap, HttpStatus.BAD_REQUEST); 
+    }
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

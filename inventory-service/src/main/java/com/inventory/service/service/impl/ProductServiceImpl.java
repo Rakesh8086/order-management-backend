@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import com.inventory.service.entity.Inventory;
 import com.inventory.service.entity.Product;
+import com.inventory.service.exception.ResourceNotFoundException;
 import com.inventory.service.repository.ProductRepository;
 import com.inventory.service.request.ProductRequest;
 import com.inventory.service.response.ProductResponse;
@@ -71,6 +72,28 @@ public class ProductServiceImpl implements ProductService{
     	return allResponses;
     }
     
+	@Override
+	public void updateProduct(Long id, ProductRequest request) {
+		Product existingProduct = productRepository.findById(id)
+		        .orElseThrow(() -> 
+		        new ResourceNotFoundException(
+		        		"Product not found with id: " + id));
+		existingProduct.setName(request.getName());
+	    existingProduct.setDescription(request.getDescription());
+	    existingProduct.setBrand(request.getBrand());
+	    existingProduct.setCategory(request.getCategory());
+	    existingProduct.setPrice(request.getPrice());
+	    existingProduct.setDiscount(request.getDiscount());
+	    existingProduct.setIsActive(request.getIsActive());
+	    if(existingProduct.getInventory() != null) {
+	        existingProduct.getInventory().setCurrentStock(request.getInitialStock());
+	        existingProduct.getInventory().setMinStockLevel(request.getMinStockLevel());
+	    }
+
+	    productRepository.save(existingProduct);
+	    // return "Product updated Successfully!";
+	}
+	
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();
         product.setName(request.getName());
