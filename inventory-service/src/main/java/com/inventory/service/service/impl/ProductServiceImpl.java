@@ -140,7 +140,10 @@ public class ProductServiceImpl implements ProductService{
         product.setPrice(request.getPrice());
         product.setDiscount(request.getDiscount());
         product.setIsActive(request.getIsActive());
-        
+		Double finalPrice = request.getPrice() - 
+    			(request.getPrice()/100) * request.getDiscount();
+    	product.setFinalPrice(finalPrice);
+
         return product;
     }
     

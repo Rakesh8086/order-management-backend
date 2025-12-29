@@ -39,4 +39,6 @@ public class Product {
     private Inventory inventory;
 	@NotNull
 	private Boolean isActive;
+	@Min(value = 0, message = "Final Price cannot be negative.")
+	private Double finalPrice;
 }
