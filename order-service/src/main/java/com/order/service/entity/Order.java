@@ -34,8 +34,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotNull(message = "must not be null")
-    private Long userId; // auth service link
     @NotNull(message = "Order date is required")
     @FutureOrPresent(message = "The order date cannot be in past")
     private LocalDateTime orderDate;

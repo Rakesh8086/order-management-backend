@@ -1,7 +1,5 @@
 package com.order.service.entity;
 
-import java.lang.annotation.Native;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -13,7 +11,6 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import main.java.com.order.service.entity.Order;
 
 @Entity
 @Data
