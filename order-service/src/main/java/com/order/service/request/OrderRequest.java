@@ -4,15 +4,19 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Range;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class OrderRequest {
+	@Valid
     @NotEmpty(message = "Order must contain at least one item")
     private List<OrderItemRequest> items;
     @NotBlank

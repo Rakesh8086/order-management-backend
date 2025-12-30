@@ -6,9 +6,6 @@ import java.util.List;
 
 import org.hibernate.validator.constraints.Range;
 
-import com.order.service.entity.OrderItem;
-import com.order.service.entity.OrderStatus;
-
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -16,6 +13,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
@@ -47,6 +45,7 @@ public class Order {
     private Integer deliveryWithinDays;
     @NotBlank
     private String shippingAddress;
+    @Valid
     @NotEmpty
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<@NotNull OrderItem> items = new ArrayList<>();
