@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import com.order.service.exception.InsufficientStockException;
+import com.order.service.exception.ResourceNotFoundException;
 
 @ControllerAdvice
 public class GlobalErrorHandler {
@@ -36,5 +37,10 @@ public class GlobalErrorHandler {
 	@ExceptionHandler(InsufficientStockException.class)
     public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
+    }
+	
+	@ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 }

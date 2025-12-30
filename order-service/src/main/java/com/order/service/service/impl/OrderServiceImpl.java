@@ -10,6 +10,7 @@ import com.order.service.entity.Order;
 import com.order.service.entity.OrderItem;
 import com.order.service.entity.OrderStatus;
 import com.order.service.exception.InsufficientStockException;
+import com.order.service.exception.ResourceNotFoundException;
 import com.order.service.feign.ProductClient;
 import com.order.service.repository.OrderRepository;
 import com.order.service.request.OrderItemRequest;
@@ -17,6 +18,7 @@ import com.order.service.request.OrderRequest;
 import com.order.service.response.ProductResponseAdmin;
 import com.order.service.service.OrderService;
 
+import feign.FeignException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -38,7 +40,16 @@ public class OrderServiceImpl implements OrderService {
         Double totalAmount = 0.0;
         List<OrderItem> orderItems = new ArrayList<>();
         for(OrderItemRequest item : request.getItems()) {
-        	ProductResponseAdmin product = productClient.getById(item.getProductId());
+        	ProductResponseAdmin product;
+        	try {
+        		product = productClient.getById(
+        						item.getProductId());
+        	} 
+        	catch(FeignException.NotFound e) {
+        	    throw new ResourceNotFoundException(
+        	    		"Product not found with Id: " + 
+        	    				item.getProductId());
+        	} 
             if(item.getQuantity() > product.getCurrentStock()) {
                 throw new InsufficientStockException(
                 		"only " + product.getCurrentStock() +
