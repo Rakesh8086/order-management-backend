@@ -118,7 +118,7 @@ public class ProductController {
     @PatchMapping("/update/{id}/stock")
     public ResponseEntity<String> updateStock(
 	    @PathVariable Long id, 
-	    @RequestParam int quantityChange) { 
+	    @RequestParam Integer quantityChange) { 
 	    productService.updateStock(id, quantityChange);
 	    
 		return ResponseEntity.ok("Stock updated successfully");

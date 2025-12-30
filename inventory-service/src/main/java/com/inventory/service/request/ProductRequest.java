@@ -28,7 +28,7 @@ public class ProductRequest {
     @Min(value = 1, message = "initial stock cannot be negative.")
     @NotNull(message = "must not be null")
     private Integer initialStock;
-    @Min(value = 1, message = "minimum stock level cannot be negative.")
+    @Min(value = 0, message = "minimum stock level cannot be negative.")
     @NotNull(message = "must not be null")
     private Integer minStockLevel;
     @NotNull(message = "must not be null")

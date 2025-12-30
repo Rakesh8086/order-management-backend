@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductResponse {
+	private Long id;
     private String name;
     private String description;
     private String brand;
@@ -15,6 +16,5 @@ public class ProductResponse {
     private Double price;
     private Double discount;
     private Double finalPrice;
-    private int currentStock; 
-    private Boolean isActive;
+    private Integer currentStock; 
 }

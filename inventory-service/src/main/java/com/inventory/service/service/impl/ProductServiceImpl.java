@@ -49,10 +49,10 @@ public class ProductServiceImpl implements ProductService{
     	List<Product> allProducts = productRepository.findAll();
     	List<ProductResponse> allResponses = new ArrayList<>();
     	for(Product prod: allProducts) {
-    		ProductResponse response = mapEntityToDto(prod);
-    		if(!response.getIsActive()) {
+    		if(!prod.getIsActive()) {
     			continue;
     		}
+    		ProductResponse response = mapEntityToDto(prod);
     		allResponses.add(response);
     	}
     	
@@ -64,11 +64,11 @@ public class ProductServiceImpl implements ProductService{
     	List<Product> allProducts = productRepository.findAll();
     	List<ProductResponseAdmin> allResponses = new ArrayList<>();
     	for(Product prod: allProducts) {
-    		ProductResponseAdmin response = 
-    				mapEntityToDtoForAdmin(prod);
-    		if(!response.getIsActive()) {
+    		if(!prod.getIsActive()) {
     			continue;
     		}
+    		ProductResponseAdmin response = 
+    				mapEntityToDtoForAdmin(prod);
     		allResponses.add(response);
     	}
     	
@@ -92,7 +92,10 @@ public class ProductServiceImpl implements ProductService{
 	        existingProduct.getInventory().setCurrentStock(request.getInitialStock());
 	        existingProduct.getInventory().setMinStockLevel(request.getMinStockLevel());
 	    }
-
+	    Double newFinalPrice = request.getPrice() - 
+    			(request.getPrice()/100) * request.getDiscount();
+	    existingProduct.setFinalPrice(newFinalPrice);
+	    
 	    productRepository.save(existingProduct);
 	    // return "Product updated Successfully!";
 	}
@@ -123,10 +126,10 @@ public class ProductServiceImpl implements ProductService{
 		List<Product> allProducts = productRepository.findAllByName(name);
 		List<ProductResponse> responses = new ArrayList<>();
 		for(Product prod: allProducts) {
-    		ProductResponse response = mapEntityToDto(prod);
-    		if(!response.getIsActive()) {
+			if(!prod.getIsActive()) {
     			continue;
     		}
+    		ProductResponse response = mapEntityToDto(prod);
     		responses.add(response);
     	}
 		
@@ -142,10 +145,10 @@ public class ProductServiceImpl implements ProductService{
 				);
 		List<ProductResponse> responses = new ArrayList<>();
 		for(Product prod: allProducts) {
-    		ProductResponse response = mapEntityToDto(prod);
-    		if(!response.getIsActive()) {
+			if(!prod.getIsActive()) {
     			continue;
     		}
+    		ProductResponse response = mapEntityToDto(prod);
     		responses.add(response);
     	}
 		
@@ -172,15 +175,15 @@ public class ProductServiceImpl implements ProductService{
 	}
 	
 	@Transactional
-	public void updateStock(Long id, int quantityChange) {
+	public void updateStock(Long id, Integer quantityChange) {
 	    Product product = productRepository.findById(id)
 	        .orElseThrow(() -> new ResourceNotFoundException(""
 	        		+ "Product not found with Id: " + id));
 	    Inventory inventory = product.getInventory();
-	    int newStock = inventory.getCurrentStock() + quantityChange;
+	    Integer newStock = inventory.getCurrentStock() + quantityChange;
 	    if(newStock < 0) {
 	        throw new InsufficientStockException(
-	        		"Cannot reduce stock below zero. Current: " 
+	        		"Cannot reduce stock below one. Current: " 
 	            + inventory.getCurrentStock());
 	    }
 
@@ -206,6 +209,7 @@ public class ProductServiceImpl implements ProductService{
     
     private ProductResponse mapEntityToDto(Product product) {
     	ProductResponse response = new ProductResponse();
+    	response.setId(product.getId());
     	response.setName(product.getName());
     	response.setDescription(product.getDescription());
     	response.setBrand(product.getBrand());
@@ -218,7 +222,6 @@ public class ProductServiceImpl implements ProductService{
     	if(product.getInventory() != null) {
             response.setCurrentStock(product.getInventory().getCurrentStock());
         }
-    	response.setIsActive(product.getIsActive());
     	
     	return response;
     }

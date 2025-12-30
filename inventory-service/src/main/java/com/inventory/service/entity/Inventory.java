@@ -26,7 +26,7 @@ public class Inventory {
 	@OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "product_id", nullable = false)
     private Product product;
-    @Min(value = 1, message = "current Stock cannot be negative.")
+    @Min(value = 0, message = "current Stock cannot be negative.")
     @NotNull(message = "must not be null")
     private Integer currentStock;
     @NotNull(message = "must not be null")

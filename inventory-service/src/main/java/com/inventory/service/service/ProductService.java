@@ -17,5 +17,5 @@ public interface ProductService {
 	List<ProductResponse> getAllByName(String name);
 	List<ProductResponse> getAllByAdvancedFilter(AdvancedFilterRequest request);
 	List<ProductResponseAdmin> getLowStockProducts(AdvancedFilterRequest request);
-	void updateStock(Long productId, int quantityChange);
+	void updateStock(Long productId, Integer quantityChange);
 }
