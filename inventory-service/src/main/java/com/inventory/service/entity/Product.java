@@ -21,8 +21,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "products")
 public class Product {
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	private Long id;
 	@NotBlank
 	private String name;
 	@NotBlank
@@ -31,14 +31,17 @@ public class Product {
 	private String category;
 	@NotBlank
 	private String brand;
-	@Min(value = 0, message = "Price cannot be negative.")
+	@NotNull(message = "must not be null")
+	@Min(value = 1, message = "Price cannot be negative.")
 	private Double price;
-	@Min(value = 0, message = "Discount cannot be negative.")
+	@NotNull(message = "must not be null")
+	@Min(value = 0, message = "Discount cannot be negative")
 	private Double discount;
 	@OneToOne(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Inventory inventory;
-	@NotNull
+	private Inventory inventory;
+	@NotNull(message = "must not be null")
 	private Boolean isActive;
-	@Min(value = 0, message = "Final Price cannot be negative.")
+	@NotNull(message = "must not be null")
+	@Min(value = 1, message = "Final Price cannot be negative.")
 	private Double finalPrice;
 }

@@ -19,14 +19,18 @@ public class ProductRequest {
     private String brand;
     @NotBlank
     private String category;
-    @Min(value = 0, message = "price cannot be negative.")
+    @Min(value = 1, message = "price cannot be negative.")
+    @NotNull(message = "must not be null")
     private Double price;
     @Min(value = 0, message = "discount cannot be negative.")
+    @NotNull(message = "must not be null")
     private Double discount;
-    @Min(value = 0, message = "initial stock cannot be negative.")
-    private int initialStock;
-    @Min(value = 0, message = "minimum stock level cannot be negative.")
-    private int minStockLevel;
-    @NotNull
+    @Min(value = 1, message = "initial stock cannot be negative.")
+    @NotNull(message = "must not be null")
+    private Integer initialStock;
+    @Min(value = 1, message = "minimum stock level cannot be negative.")
+    @NotNull(message = "must not be null")
+    private Integer minStockLevel;
+    @NotNull(message = "must not be null")
     private Boolean isActive;
 }
