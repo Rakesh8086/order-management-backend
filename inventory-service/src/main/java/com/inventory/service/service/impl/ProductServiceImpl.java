@@ -150,7 +150,25 @@ public class ProductServiceImpl implements ProductService{
 		
 		return responses;
 	}
+	
+	@Override
+	public List<ProductResponseAdmin> getLowStockProducts(
+			AdvancedFilterRequest request){
+		List<Product> products = productRepository.findByOptionalParams(
+				request.getName(), request.getBrand(),
+				request.getFinalPrice(), request.getDiscount()
+			);
+	    List<ProductResponseAdmin> result = new ArrayList<>();
+	    for(Product prod : products) {
+	        if(prod.getIsActive() && 
+	        		prod.getInventory().getCurrentStock() <= 
+	        		prod.getInventory().getMinStockLevel()) {
+	            result.add(mapEntityToDtoForAdmin(prod));
+	        }
+	    }
 
+	    return result;
+	}
 	
     private Product mapDtoToEntity(ProductRequest request) {
     	Product product = new Product();

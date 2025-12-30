@@ -69,7 +69,7 @@ public class ProductController {
     			+ "be available for customers");
     }
     
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<ProductResponseAdmin> 
     getById(@PathVariable Long id){
     	ResponseEntity<ProductResponseAdmin> Product =  
@@ -80,7 +80,7 @@ public class ProductController {
     	return Product;
     }
     
-    @GetMapping("/all/{name}")
+    @GetMapping("/name/{name}")
     public ResponseEntity<List<ProductResponse>> getAllByName(
     		@PathVariable String name){
     	ResponseEntity<List<ProductResponse>> allProducts =  
@@ -91,7 +91,7 @@ public class ProductController {
     	return allProducts;
     }
     
-    @GetMapping("/all/filter")
+    @GetMapping("/filter")
     public ResponseEntity<List<ProductResponse>> getAllByAdvancedFilter(
     		@RequestBody AdvancedFilterRequest request){
     	ResponseEntity<List<ProductResponse>> allProducts =  
@@ -101,4 +101,16 @@ public class ProductController {
     	
     	return allProducts;
     }
+    
+    @GetMapping("/lowStock")
+    public ResponseEntity<List<ProductResponseAdmin>> getLowStockProducts(
+    		@RequestBody AdvancedFilterRequest request){
+    	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
+    			new ResponseEntity<>(
+    			productService.getLowStockProducts(request), 
+    			HttpStatus.OK);
+    	
+    	return allProducts;
+    }
+    
 }

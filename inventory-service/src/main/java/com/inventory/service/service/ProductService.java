@@ -16,4 +16,5 @@ public interface ProductService {
 	ProductResponseAdmin getById(Long id);
 	List<ProductResponse> getAllByName(String name);
 	List<ProductResponse> getAllByAdvancedFilter(AdvancedFilterRequest request);
+	List<ProductResponseAdmin> getLowStockProducts(AdvancedFilterRequest request);
 }
