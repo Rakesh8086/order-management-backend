@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.inventory.service.exception.InsufficientStockException;
 import com.inventory.service.exception.ResourceNotFoundException;
 
 @ControllerAdvice
@@ -36,5 +37,10 @@ public class GlobalErrorHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+	
+	@ExceptionHandler(InsufficientStockException.class)
+    public ResponseEntity<String> handleInsufficientStockException(InsufficientStockException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
     }
 }

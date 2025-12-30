@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.inventory.service.entity.Inventory;
 import com.inventory.service.entity.Product;
+import com.inventory.service.exception.InsufficientStockException;
 import com.inventory.service.exception.ResourceNotFoundException;
 import com.inventory.service.repository.ProductRepository;
 import com.inventory.service.request.AdvancedFilterRequest;
@@ -168,6 +169,23 @@ public class ProductServiceImpl implements ProductService{
 	    }
 
 	    return result;
+	}
+	
+	@Transactional
+	public void updateStock(Long id, int quantityChange) {
+	    Product product = productRepository.findById(id)
+	        .orElseThrow(() -> new ResourceNotFoundException(""
+	        		+ "Product not found with Id: " + id));
+	    Inventory inventory = product.getInventory();
+	    int newStock = inventory.getCurrentStock() + quantityChange;
+	    if(newStock < 0) {
+	        throw new InsufficientStockException(
+	        		"Cannot reduce stock below zero. Current: " 
+	            + inventory.getCurrentStock());
+	    }
+
+	    inventory.setCurrentStock(newStock);
+	    productRepository.save(product);
 	}
 	
     private Product mapDtoToEntity(ProductRequest request) {
