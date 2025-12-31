@@ -16,6 +16,7 @@ import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
 import com.order.service.feign.ProductClient;
 import com.order.service.repository.OrderRepository;
+import com.order.service.request.AdminSearchFilter;
 import com.order.service.request.OrderItemRequest;
 import com.order.service.request.OrderRequest;
 import com.order.service.response.OrderItemResponse;
@@ -137,6 +138,21 @@ public class OrderServiceImpl implements OrderService {
 
         order.setStatus(OrderStatus.CANCELLED);
         orderRepository.save(order);
+    }
+    
+    @Override
+    public List<OrderResponse> getAllOrdersByFilters(
+    		AdminSearchFilter filter){
+    	List<Order> allOrders = orderRepository.findOrdersByAdminFilters(
+    			filter.getStatus(), filter.getUserId(), 
+    			filter.getStartDate());
+    	List<OrderResponse> allResponse = new ArrayList<>();
+    	for(Order order: allOrders) {
+    		OrderResponse response = mapEntityToResponse(order);
+    		allResponse.add(response);
+    	}
+    	
+    	return allResponse;
     }
     
     private OrderResponse mapEntityToResponse(Order order) {

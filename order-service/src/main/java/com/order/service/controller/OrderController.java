@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.order.service.request.AdminSearchFilter;
 import com.order.service.request.OrderRequest;
 import com.order.service.response.OrderResponse;
 import com.order.service.service.OrderService;
@@ -51,5 +52,13 @@ public class OrderController {
 	public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
 	    orderService.cancelOrder(id);
 	    return ResponseEntity.ok("Order cancelled.");
+	}
+	
+	@GetMapping("/admin/filter")
+	public ResponseEntity<List<OrderResponse>> 
+	getAllOrdersByFilters(@RequestBody AdminSearchFilter filter){
+		return new ResponseEntity<>(
+				orderService.getAllOrdersByFilters(filter), 
+				HttpStatus.OK);
 	}
 }
