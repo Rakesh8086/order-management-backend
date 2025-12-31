@@ -1,5 +1,7 @@
 package com.order.service.controller;
 
+import java.util.List;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +36,13 @@ public class OrderController {
 	@GetMapping("/id/{id}")
 	public ResponseEntity<OrderResponse> getById(@PathVariable Long id){
 		return new ResponseEntity<>(orderService.getById(id), 
+				HttpStatus.OK);
+	}
+	
+	@GetMapping("/history/{id}")
+	public ResponseEntity<List<OrderResponse>> 
+	getOrderHistory(@PathVariable Long id){
+		return new ResponseEntity<>(orderService.getOrderHistory(id), 
 				HttpStatus.OK);
 	}
 }

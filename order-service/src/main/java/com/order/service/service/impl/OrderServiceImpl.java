@@ -90,6 +90,24 @@ public class OrderServiceImpl implements OrderService {
     				"Order not found with id: "+ id);
     	}
     	Order order = orderOptional.get();
+    	OrderResponse response = mapEntityToResponse(order);
+    	
+    	return response;
+    }
+    
+    @Override
+    public List<OrderResponse> getOrderHistory(Long id){
+    	List<Order> allOrders = orderRepository.findByUserId(id);
+    	List<OrderResponse> allResponse = new ArrayList<>();
+    	for(Order order: allOrders) {
+    		OrderResponse response = mapEntityToResponse(order);
+    		allResponse.add(response);
+    	}
+    	
+    	return allResponse;
+    }
+    
+    private OrderResponse mapEntityToResponse(Order order) {
     	OrderResponse response = new OrderResponse();
     	response.setId(order.getId());
     	response.setOrderDate(order.getOrderDate().toLocalDate());
