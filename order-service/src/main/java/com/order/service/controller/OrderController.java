@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -44,5 +45,11 @@ public class OrderController {
 	getOrderHistory(@PathVariable Long id){
 		return new ResponseEntity<>(orderService.getOrderHistory(id), 
 				HttpStatus.OK);
+	}
+	
+	@PutMapping("/cancel/{id}")
+	public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
+	    orderService.cancelOrder(id);
+	    return ResponseEntity.ok("Order cancelled.");
 	}
 }

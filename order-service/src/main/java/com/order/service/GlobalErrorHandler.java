@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
 
@@ -42,5 +43,10 @@ public class GlobalErrorHandler {
 	@ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<String> handleResourceNotFoundException(ResourceNotFoundException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+	
+	@ExceptionHandler(CancellationNotPossibleException.class)
+    public ResponseEntity<String> handleCancellationNotPossibleException(CancellationNotPossibleException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }

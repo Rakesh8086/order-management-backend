@@ -14,7 +14,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
@@ -35,7 +34,7 @@ public class Order {
     @NotNull(message = "must not be null")
     private Long userId; // auth service link
     @NotNull(message = "Order date is required")
-    @FutureOrPresent(message = "The order date cannot be in past")
+    // @FutureOrPresent(message = "The order date cannot be in past")
     private LocalDateTime orderDate;
     @NotNull(message = "must not be null")
     @Min(value = 1, message = "Total Amount must be atleast 1")

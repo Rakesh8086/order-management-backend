@@ -9,4 +9,5 @@ public interface OrderService {
 	Long placeOrder(OrderRequest request, Long userId);
 	OrderResponse getById(Long id);
 	List<OrderResponse> getOrderHistory(Long id);
+	void cancelOrder(Long orderId);
 }

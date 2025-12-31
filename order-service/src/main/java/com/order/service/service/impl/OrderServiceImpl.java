@@ -1,6 +1,7 @@
 package com.order.service.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Service;
 import com.order.service.entity.Order;
 import com.order.service.entity.OrderItem;
 import com.order.service.entity.OrderStatus;
+import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
 import com.order.service.feign.ProductClient;
@@ -39,7 +41,7 @@ public class OrderServiceImpl implements OrderService {
         order.setAddress(request.getAddress());
         order.setDeliveryWithinDays(request.getDeliveryWithinDays());
         order.setStatus(OrderStatus.ORDERED);
-        order.setOrderDate(LocalDateTime.now().plusMinutes(1));
+        order.setOrderDate(LocalDateTime.now());
 
         Double totalAmount = 0.0;
         List<OrderItem> orderItems = new ArrayList<>();
@@ -105,6 +107,36 @@ public class OrderServiceImpl implements OrderService {
     	}
     	
     	return allResponse;
+    }
+    
+    @Override
+    @Transactional
+    public void cancelOrder(Long orderId) {
+        Optional<Order> orderOptional = orderRepository.findById(orderId);
+        if(!orderOptional.isPresent()) {
+        	throw new ResourceNotFoundException(
+        			"Order not found with id " + orderId);
+        }
+        Order order = orderOptional.get();
+        if(!order.getStatus().equals(OrderStatus.ORDERED)) {
+            throw new IllegalStateException(
+            		"Order cannot be canceled once it is " +
+            				order.getStatus());
+        }
+        LocalDateTime deliveryDate = order.getOrderDate().plusDays(order.getDeliveryWithinDays());
+        if(ChronoUnit.DAYS.between(LocalDateTime.now(), deliveryDate) <= 0) {
+        	throw new CancellationNotPossibleException(
+        			"Cancellation failed. Order must be cancelled at least "
+							+ "24 hours prior to delivery date");
+        }
+        // update stock
+        List<OrderItem> orderedItems = order.getItems();
+        for(OrderItem item : orderedItems) {
+            productClient.updateStock(item.getProductId(), item.getQuantity());
+        }
+
+        order.setStatus(OrderStatus.CANCELLED);
+        orderRepository.save(order);
     }
     
     private OrderResponse mapEntityToResponse(Order order) {
