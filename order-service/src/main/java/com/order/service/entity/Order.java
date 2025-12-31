@@ -32,6 +32,8 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @NotNull(message = "must not be null")
+    private Long userId; // auth service link
     @NotNull(message = "Order date is required")
     @FutureOrPresent(message = "The order date cannot be in past")
     private LocalDateTime orderDate;
@@ -44,7 +46,7 @@ public class Order {
     @Range(min = 1, max = 5, message = "value should be between 1 and 5")
     private Integer deliveryWithinDays;
     @NotBlank
-    private String shippingAddress;
+    private String address;
     @Valid
     @NotEmpty
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)

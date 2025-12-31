@@ -9,6 +9,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 
@@ -27,6 +28,10 @@ public class OrderItem {
     @NotNull(message = "must not be null")
     @Min(value = 1, message = "Unit price must be atleast 1")
     private Double unitPrice;
+    @NotBlank
+    private String productName;
+    @NotBlank
+    private String brand;
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     private Order order;

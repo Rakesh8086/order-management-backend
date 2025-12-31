@@ -20,7 +20,7 @@ public class OrderRequest {
     @NotEmpty(message = "Order must contain at least one item")
     private List<OrderItemRequest> items;
     @NotBlank
-    private String shippingAddress;
+    private String address;
     @NotNull(message = "must not be null")
     @Range(min = 1, max = 5, message = "value should be between 1 and 5")
     private int deliveryWithinDays;

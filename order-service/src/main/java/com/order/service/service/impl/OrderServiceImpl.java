@@ -3,6 +3,7 @@ package com.order.service.service.impl;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -15,6 +16,8 @@ import com.order.service.feign.ProductClient;
 import com.order.service.repository.OrderRepository;
 import com.order.service.request.OrderItemRequest;
 import com.order.service.request.OrderRequest;
+import com.order.service.response.OrderItemResponse;
+import com.order.service.response.OrderResponse;
 import com.order.service.response.ProductResponseAdmin;
 import com.order.service.service.OrderService;
 
@@ -32,7 +35,8 @@ public class OrderServiceImpl implements OrderService {
     @Transactional
     public Long placeOrder(OrderRequest request, Long userId) {
         Order order = new Order();
-        order.setShippingAddress(request.getShippingAddress());
+        order.setUserId(9876L);
+        order.setAddress(request.getAddress());
         order.setDeliveryWithinDays(request.getDeliveryWithinDays());
         order.setStatus(OrderStatus.ORDERED);
         order.setOrderDate(LocalDateTime.now().plusMinutes(1));
@@ -53,10 +57,13 @@ public class OrderServiceImpl implements OrderService {
             if(item.getQuantity() > product.getCurrentStock()) {
                 throw new InsufficientStockException(
                 		"only " + product.getCurrentStock() +
-                		"available for " + product.getName());
+                		" available for " + product.getName() + 
+                		" for the brand " + product.getBrand());
             }
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(item.getProductId());
+            orderItem.setProductName(product.getName());
+            orderItem.setBrand(product.getBrand());
             orderItem.setQuantity(item.getQuantity());
             orderItem.setUnitPrice(product.getFinalPrice()); 
             orderItem.setOrder(order);
@@ -73,6 +80,42 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
         
         return savedOrder.getId();
+    }
+    
+    @Override
+    public OrderResponse getById(Long id) {
+    	Optional<Order> orderOptional = orderRepository.findById(id);
+    	if(!orderOptional.isPresent()) {
+    		throw new ResourceNotFoundException(
+    				"Order not found with id: "+ id);
+    	}
+    	Order order = orderOptional.get();
+    	OrderResponse response = new OrderResponse();
+    	response.setId(order.getId());
+    	response.setOrderDate(order.getOrderDate().toLocalDate());
+    	response.setDeliveryDate(order.getOrderDate().plusDays(
+    					order.getDeliveryWithinDays()).toLocalDate());
+    	response.setTotalAmount(order.getTotalAmount());
+    	response.setStatus(order.getStatus());
+    	response.setAddress(order.getAddress());
+    	List<OrderItemResponse> itemsResponse = new ArrayList<>();
+    	List<OrderItem> items = order.getItems();
+    	// during place order, we send feign call to fetch unit price 
+    	// using Id and store it in OrderItem entity
+    	// during get order, we retrieve unit price of each product 
+    	// from OrderItem entity 
+    	for(OrderItem item: items) {
+    		OrderItemResponse detail = new OrderItemResponse();
+            detail.setProductId(item.getProductId());
+            detail.setQuantity(item.getQuantity());
+            detail.setUnitPrice(item.getUnitPrice());
+            detail.setProductName(item.getProductName());
+            detail.setBrand(item.getBrand());
+            itemsResponse.add(detail);
+    	}
+    	response.setItems(itemsResponse);
+    	
+    	return response;
     }
     
     private Double DeliveryFee(Integer deliveryWithinDays) {
