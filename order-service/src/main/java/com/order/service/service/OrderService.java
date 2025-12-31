@@ -12,4 +12,5 @@ public interface OrderService {
 	List<OrderResponse> getOrderHistory(Long id);
 	void cancelOrder(Long orderId);
 	List<OrderResponse> getAllOrdersByFilters(AdminSearchFilter filter);
+	void updateOrderStatus(AdminSearchFilter filter);
 }

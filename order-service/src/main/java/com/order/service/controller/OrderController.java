@@ -61,4 +61,11 @@ public class OrderController {
 				orderService.getAllOrdersByFilters(filter), 
 				HttpStatus.OK);
 	}
+	
+	@PostMapping("/update/order/status")
+	public ResponseEntity<String> updateOrderStatus(
+			@RequestBody AdminSearchFilter filter) {
+	    orderService.updateOrderStatus(filter);
+	    return ResponseEntity.ok("Delivery status updated");
+	}
 }

@@ -155,6 +155,22 @@ public class OrderServiceImpl implements OrderService {
     	return allResponse;
     }
     
+    @Override
+    public void updateOrderStatus(AdminSearchFilter filter) {
+    	List<Order> pendingOrders = orderRepository.findOrdersByAdminFilters(
+    			OrderStatus.CANCELLED, filter.getUserId(), 
+    			filter.getStartDate());
+    	LocalDateTime currDateTime = LocalDateTime.now();
+    	for(Order order: pendingOrders) {
+    		LocalDateTime deliveryDate = order.getOrderDate()
+                    .plusDays(order.getDeliveryWithinDays());
+			if(currDateTime.isAfter(deliveryDate)) {
+				order.setStatus(OrderStatus.DELIVERED);
+			}
+    	}
+    	orderRepository.saveAll(pendingOrders);
+    }
+    
     private OrderResponse mapEntityToResponse(Order order) {
     	OrderResponse response = new OrderResponse();
     	response.setId(order.getId());
