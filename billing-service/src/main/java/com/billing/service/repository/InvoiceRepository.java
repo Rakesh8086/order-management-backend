@@ -1,5 +1,8 @@
 package com.billing.service.repository;
 
+import java.util.List;
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -12,4 +15,6 @@ public interface InvoiceRepository extends JpaRepository<Invoice, Long> {
     Double getTotalRevenue();
     @Query("SELECT AVG(i.totalAmount) FROM Invoice i")
     Double getAverageInvoiceValue();
+    Optional<Invoice> findByOrderId(Long orderId);
+    List<Invoice> findByUserId(Long userId);
 }
