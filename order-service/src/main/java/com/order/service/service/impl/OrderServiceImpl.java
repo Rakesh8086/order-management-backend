@@ -14,9 +14,11 @@ import com.order.service.entity.OrderStatus;
 import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
+import com.order.service.feign.BillingClient;
 import com.order.service.feign.ProductClient;
 import com.order.service.repository.OrderRepository;
 import com.order.service.request.AdminSearchFilter;
+import com.order.service.request.InvoiceRequest;
 import com.order.service.request.OrderItemRequest;
 import com.order.service.request.OrderRequest;
 import com.order.service.response.OrderItemResponse;
@@ -32,7 +34,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
-    private final ProductClient productClient; 
+    private final ProductClient productClient;
+    private final BillingClient billingClient;
 
     @Override
     @Transactional
@@ -81,6 +84,12 @@ public class OrderServiceImpl implements OrderService {
         order.setTotalAmount(totalAmount);
         // order items saved automatically because of cascade
         Order savedOrder = orderRepository.save(order);
+        
+        billingClient.createInvoice(new InvoiceRequest(
+    	    savedOrder.getId(), 
+    	    9876L, 
+    	    savedOrder.getTotalAmount()
+    	));
         
         return savedOrder.getId();
     }
