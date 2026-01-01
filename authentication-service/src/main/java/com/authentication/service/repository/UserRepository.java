@@ -9,7 +9,7 @@ import com.authentication.service.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long>{
-	Optional<User> fingByEmail(String email);
+	Optional<User> findByEmail(String email);
 	Optional<User> findByMobileNumber(String mobileNumber);
 	Boolean existsByMobileNumber(String mobileNumber);
 	Boolean existsByEmail(String email);

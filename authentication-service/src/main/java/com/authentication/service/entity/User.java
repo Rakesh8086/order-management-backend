@@ -44,11 +44,20 @@ public class User {
 	@Pattern(regexp = "\\d{10}", message = "Mobile number must be a 10-digit number")
 	private String mobileNumber;
 	@NotBlank
-	@Size(max = 50)
+	@Size(max = 120)
 	private String password;
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(name = "user_roles", 
 	             joinColumns = @JoinColumn(name = "user_id"),
 	             inverseJoinColumns = @JoinColumn(name = "role_id"))
 	private Set<Role> roles = new HashSet<>();
+	
+	// this constructor is needed when user does not specify role
+	public User(String username, String email, String mobileNumber,
+			String password) {
+	    this.username = username;
+	    this.email = email;
+	    this.mobileNumber = mobileNumber;
+	    this.password = password;
+	}
 }
