@@ -30,7 +30,6 @@ import com.order.service.response.ProductResponseAdmin;
 import com.order.service.service.OrderService;
 
 import feign.FeignException;
-import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -44,7 +43,6 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     // @Transactional 
-    @CircuitBreaker(name = "notificationService", fallbackMethod = "notificationFallback")
     public Long placeOrder(OrderRequest request, Long userId) {
         Order order = new Order();
         order.setUserId(9876L);
@@ -92,26 +90,33 @@ public class OrderServiceImpl implements OrderService {
         Order savedOrder = orderRepository.save(order);
         
         try {
-            processBilling(savedOrder);
-            NotificationRequest notification = new NotificationRequest();
-            notification.setOrderId(savedOrder.getId());
-            notification.setRecipientEmail("metal01spike@gmail.com");      
-            notificationClient.sendOrderNotification(notification);
-            
+        	billingClient.createInvoice(new InvoiceRequest(
+                    order.getId(), order.getUserId(), order.getTotalAmount()
+            ));
+        	try {
+            	NotificationRequest notification = new NotificationRequest();
+                notification.setOrderId(savedOrder.getId());
+                notification.setRecipientEmail("metal01spike@gmail.com");      
+                notificationClient.sendOrderNotification(notification);
+            }
+        	catch (Exception e) {
+        		System.err.println("Notification service down*******");
+        		// throw new ServiceDownException("Notification service down, "
+                // 		+ "but order confirmed"); 
+        	}
         } 
-        catch (ServiceDownException e) {
-            System.err.println("Skipping Notification because Billing failed");
-            throw e; 
+        catch (Exception e) {
+        	order.setStatus(OrderStatus.FAILED);
+        	for(OrderItem item : order.getItems()) {
+                productClient.updateStock(item.getProductId(), item.getQuantity());
+            }
+        	orderRepository.save(order);
+            System.err.println("Billing service down*********");
+            throw new ServiceDownException("Billing service down, "
+            		+ "order failed"); 
         }
-  
-        return savedOrder.getId();
-    }
-    
-    @CircuitBreaker(name = "billingService", fallbackMethod = "billingFallback")
-    public void processBilling(Order order) {
-        billingClient.createInvoice(new InvoiceRequest(
-            order.getId(), order.getUserId(), order.getTotalAmount()
-        ));
+        
+		return savedOrder.getId();
     }
     
     @Override
@@ -244,23 +249,5 @@ public class OrderServiceImpl implements OrderService {
     	}
     	
     	return 40.0;
-    }
-    
-    public void billingFallback(Order order, Exception e) {
-        System.err.println("Billing Service is down");
-        order.setStatus(OrderStatus.FAILED);
-        orderRepository.save(order);
-        for(OrderItem item : order.getItems()) {
-            productClient.updateStock(item.getProductId(), item.getQuantity());
-        }
-        
-        throw new ServiceDownException("Billing service down, Order failed");
-    }
-    
-    public Long notificationFallback(OrderRequest request, Long userId, Exception e) {
-        System.err.println("Notification Service is down**********");
-        System.err.println("Notification failed, but order is confirmed.");
-        throw new ServiceDownException(
-         		"Notification Service is currently down");
     }
 }
