@@ -14,6 +14,7 @@ import com.order.service.entity.OrderStatus;
 import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
+import com.order.service.exception.ServiceDownException;
 import com.order.service.feign.BillingClient;
 import com.order.service.feign.NotificationClient;
 import com.order.service.feign.ProductClient;
@@ -29,6 +30,7 @@ import com.order.service.response.ProductResponseAdmin;
 import com.order.service.service.OrderService;
 
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -41,7 +43,8 @@ public class OrderServiceImpl implements OrderService {
     private final NotificationClient notificationClient;
 
     @Override
-    @Transactional
+    // @Transactional 
+    @CircuitBreaker(name = "notificationService", fallbackMethod = "notificationFallback")
     public Long placeOrder(OrderRequest request, Long userId) {
         Order order = new Order();
         order.setUserId(9876L);
@@ -88,24 +91,27 @@ public class OrderServiceImpl implements OrderService {
         // order items saved automatically because of cascade
         Order savedOrder = orderRepository.save(order);
         
-        billingClient.createInvoice(new InvoiceRequest(
-    	    savedOrder.getId(), 
-    	    9876L, 
-    	    savedOrder.getTotalAmount()
-    	));
-        
         try {
+            processBilling(savedOrder);
             NotificationRequest notification = new NotificationRequest();
             notification.setOrderId(savedOrder.getId());
-            notification.setRecipientEmail("metal01spike@gmail.com");
-            
+            notification.setRecipientEmail("metal01spike@gmail.com");      
             notificationClient.sendOrderNotification(notification);
+            
         } 
-        catch (Exception e) {
-            System.err.println("Notification failed, but order # " + savedOrder.getId() + " is confirmed.");
+        catch (ServiceDownException e) {
+            System.err.println("Skipping Notification because Billing failed");
+            throw e; 
         }
-        
+  
         return savedOrder.getId();
+    }
+    
+    @CircuitBreaker(name = "billingService", fallbackMethod = "billingFallback")
+    public void processBilling(Order order) {
+        billingClient.createInvoice(new InvoiceRequest(
+            order.getId(), order.getUserId(), order.getTotalAmount()
+        ));
     }
     
     @Override
@@ -238,5 +244,23 @@ public class OrderServiceImpl implements OrderService {
     	}
     	
     	return 40.0;
+    }
+    
+    public void billingFallback(Order order, Exception e) {
+        System.err.println("Billing Service is down");
+        order.setStatus(OrderStatus.FAILED);
+        orderRepository.save(order);
+        for(OrderItem item : order.getItems()) {
+            productClient.updateStock(item.getProductId(), item.getQuantity());
+        }
+        
+        throw new ServiceDownException("Billing service down, Order failed");
+    }
+    
+    public Long notificationFallback(OrderRequest request, Long userId, Exception e) {
+        System.err.println("Notification Service is down**********");
+        System.err.println("Notification failed, but order is confirmed.");
+        throw new ServiceDownException(
+         		"Notification Service is currently down");
     }
 }

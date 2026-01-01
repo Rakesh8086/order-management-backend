@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
+import com.order.service.exception.ServiceDownException;
 
 @ControllerAdvice
 public class GlobalErrorHandler {
@@ -48,5 +49,10 @@ public class GlobalErrorHandler {
 	@ExceptionHandler(CancellationNotPossibleException.class)
     public ResponseEntity<String> handleCancellationNotPossibleException(CancellationNotPossibleException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+	
+	@ExceptionHandler(ServiceDownException.class)
+    public ResponseEntity<String> handleServiceDownException(ServiceDownException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.SERVICE_UNAVAILABLE);
     }
 }
