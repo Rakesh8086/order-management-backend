@@ -15,10 +15,12 @@ import com.order.service.exception.CancellationNotPossibleException;
 import com.order.service.exception.InsufficientStockException;
 import com.order.service.exception.ResourceNotFoundException;
 import com.order.service.feign.BillingClient;
+import com.order.service.feign.NotificationClient;
 import com.order.service.feign.ProductClient;
 import com.order.service.repository.OrderRepository;
 import com.order.service.request.AdminSearchFilter;
 import com.order.service.request.InvoiceRequest;
+import com.order.service.request.NotificationRequest;
 import com.order.service.request.OrderItemRequest;
 import com.order.service.request.OrderRequest;
 import com.order.service.response.OrderItemResponse;
@@ -36,6 +38,7 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final ProductClient productClient;
     private final BillingClient billingClient;
+    private final NotificationClient notificationClient;
 
     @Override
     @Transactional
@@ -90,6 +93,17 @@ public class OrderServiceImpl implements OrderService {
     	    9876L, 
     	    savedOrder.getTotalAmount()
     	));
+        
+        try {
+            NotificationRequest notification = new NotificationRequest();
+            notification.setOrderId(savedOrder.getId());
+            notification.setRecipientEmail("metal01spike@gmail.com");
+            
+            notificationClient.sendOrderNotification(notification);
+        } 
+        catch (Exception e) {
+            System.err.println("Notification failed, but order # " + savedOrder.getId() + " is confirmed.");
+        }
         
         return savedOrder.getId();
     }
