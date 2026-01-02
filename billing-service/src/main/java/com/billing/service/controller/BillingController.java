@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,6 +27,7 @@ public class BillingController {
 	private final BillingService billingService;
 	
 	@PostMapping("/create/invoice")
+	// @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<Long> createInvoice(
     		@Valid @RequestBody InvoiceRequest request) {
         return new ResponseEntity<>(
@@ -33,11 +35,13 @@ public class BillingController {
     }
 	
 	@GetMapping("/report")
+	@PreAuthorize("hasRole('FINANCE_OFFICER')")
     public ResponseEntity<FinanceReportResponse> getFinanceReport() {
         return ResponseEntity.ok(billingService.getFinanceReport());
     }
 	
 	@GetMapping("/order/{orderId}")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<InvoiceResponse> getByOrderId(
     		@PathVariable Long orderId) {
 		ResponseEntity<InvoiceResponse> invoice =  
@@ -49,6 +53,7 @@ public class BillingController {
     }
 	
 	@GetMapping("/history/{userId}")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<InvoiceResponse>> getAllInvoicesByUserId(
     		@PathVariable Long userId) {
 		ResponseEntity<List<InvoiceResponse>> invoices =  
