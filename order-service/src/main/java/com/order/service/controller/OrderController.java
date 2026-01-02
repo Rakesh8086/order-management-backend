@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,6 +28,7 @@ public class OrderController {
 	private final OrderService orderService;
 	
 	@PostMapping("/order")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
 	public ResponseEntity<Long> placeOrder(
 	        @Valid @RequestBody OrderRequest request, 
 	        Long userId) {
@@ -36,12 +38,14 @@ public class OrderController {
 	}
 	
 	@GetMapping("/id/{id}")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
 	public ResponseEntity<OrderResponse> getById(@PathVariable Long id){
 		return new ResponseEntity<>(orderService.getById(id), 
 				HttpStatus.OK);
 	}
 	
 	@GetMapping("/history/{id}")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
 	public ResponseEntity<List<OrderResponse>> 
 	getOrderHistory(@PathVariable Long id){
 		return new ResponseEntity<>(orderService.getOrderHistory(id), 
@@ -49,12 +53,14 @@ public class OrderController {
 	}
 	
 	@PutMapping("/cancel/{id}")
+	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
 	public ResponseEntity<String> cancelOrder(@PathVariable Long id) {
 	    orderService.cancelOrder(id);
 	    return ResponseEntity.ok("Order cancelled.");
 	}
 	
 	@GetMapping("/admin/filter")
+	@PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
 	public ResponseEntity<List<OrderResponse>> 
 	getAllOrdersByFilters(@RequestBody AdminSearchFilter filter){
 		return new ResponseEntity<>(
@@ -63,6 +69,7 @@ public class OrderController {
 	}
 	
 	@PostMapping("/update/order/status")
+	@PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
 	public ResponseEntity<String> updateOrderStatus(
 			@RequestBody AdminSearchFilter filter) {
 	    orderService.updateOrderStatus(filter);

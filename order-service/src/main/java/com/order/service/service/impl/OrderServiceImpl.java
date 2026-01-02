@@ -192,13 +192,17 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public void updateOrderStatus(AdminSearchFilter filter) {
     	List<Order> pendingOrders = orderRepository.findOrdersByAdminFilters(
-    			OrderStatus.CANCELLED, filter.getUserId(), 
+    			OrderStatus.ORDERED, filter.getUserId(), 
     			filter.getStartDate());
     	LocalDateTime currDateTime = LocalDateTime.now();
+    	// System.out.println("((((((((((" + pendingOrders.size());
     	for(Order order: pendingOrders) {
     		LocalDateTime deliveryDate = order.getOrderDate()
                     .plusDays(order.getDeliveryWithinDays());
-			if(currDateTime.isAfter(deliveryDate)) {
+    		// System.out.println("deliveryDate &&&&&&& " + deliveryDate);
+    		// System.out.println("Now ******* " + currDateTime);
+			if(currDateTime.isAfter(deliveryDate)) {	
+				// System.out.println("here " + order.getId());
 				order.setStatus(OrderStatus.DELIVERED);
 			}
     	}
