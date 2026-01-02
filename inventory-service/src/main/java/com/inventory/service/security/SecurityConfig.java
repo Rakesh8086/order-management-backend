@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authorization.AuthorizationDecision;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,9 +37,21 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/test/**").permitAll()
-                .anyRequest().authenticated()
-            )
+                 .requestMatchers("/api/products/update/{id}/stock")
+                 .access((authentication, context) -> {
+                  boolean isWareHouseManager = authentication.get().getAuthorities().stream()
+                   .anyMatch(a -> a.getAuthority().equals("WAREHOUSE_MANAGER")); 
+                  String incomingSecret = context.getRequest().getHeader("X-Internal-Secret");
+                  // System.out.println("incoming secret ******* " + incomingSecret);
+                  // System.out.println("Role is ****** " + isWareHouseManager);
+                  boolean isInternalService = "SYSTEM-CALL".equals(incomingSecret);
+                  // System.out.println(isWareHouseManager || isInternalService);
+
+                  return new AuthorizationDecision(isWareHouseManager || isInternalService);
+              })
+                 // other request just need validation of jwt
+                 .anyRequest().authenticated()
+             )
             .oauth2ResourceServer(oauth2 -> oauth2
                 .bearerTokenResolver(cookieTokenResolver()) 
                 .jwt(jwt -> jwt.decoder(jwtDecoder())       

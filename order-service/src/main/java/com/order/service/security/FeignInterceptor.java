@@ -34,6 +34,7 @@ public class FeignInterceptor implements RequestInterceptor {
                     }
                 }
             }
+            template.header("X-Internal-Secret", "SYSTEM-CALL");
         }
     }
 }
