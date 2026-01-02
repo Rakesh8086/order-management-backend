@@ -1,9 +1,18 @@
 package com.authentication.service.service.impl;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,9 +22,14 @@ import com.authentication.service.entity.User;
 import com.authentication.service.exception.SignupFailedException;
 import com.authentication.service.repository.RoleRepository;
 import com.authentication.service.repository.UserRepository;
+import com.authentication.service.request.LoginRequest;
 import com.authentication.service.request.SignupRequest;
+import com.authentication.service.response.UserInfoResponse;
+import com.authentication.service.security.jwt.JwtUtils;
 import com.authentication.service.service.AuthService;
+import com.authentication.service.service.UserDetailsImpl;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -27,7 +41,12 @@ public class AuthServiceImpl implements AuthService {
 	private final RoleRepository roleRepository;
 	@Autowired
 	private final PasswordEncoder encoder;
+	@Autowired
+	private final AuthenticationManager authenticationManager;
+	@Autowired
+	private final JwtUtils jwtUtils;
 	
+	@Override
 	public Long registerUser(SignupRequest request) {
 		if(userRepository.existsByMobileNumber(request.getMobileNumber())) {
 		      throw new SignupFailedException(
@@ -75,5 +94,30 @@ public class AuthServiceImpl implements AuthService {
 	    userRepository.save(user);
 	    
 	    return user.getId();
+	}
+	
+	@Override
+	public UserInfoResponse authenticateUser(LoginRequest loginRequest,
+			HttpServletResponse response) {
+	    Authentication authentication = authenticationManager
+	        .authenticate(new UsernamePasswordAuthenticationToken(
+	        		loginRequest.getMobileNumber(), loginRequest.getPassword()));
+	    // store the authenticated user in security context of spring
+	    SecurityContextHolder.getContext().setAuthentication(authentication);
+	    UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
+	    ResponseCookie jwtCookie = jwtUtils.generateJwtCookie(userDetails);
+	    List<String> roles = new ArrayList<>();
+	    for(GrantedAuthority authority : userDetails.getAuthorities()) {
+		   roles.add(authority.getAuthority());
+		} 
+	    response.setHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+	    
+	    return new UserInfoResponse(
+            userDetails.getId(),
+            userDetails.getUsername(),
+            userDetails.getMobileNumber(),
+            userDetails.getEmail(),
+            roles
+	    );
 	}
 }

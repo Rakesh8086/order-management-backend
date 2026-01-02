@@ -9,9 +9,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.authentication.service.request.LoginRequest;
 import com.authentication.service.request.SignupRequest;
+import com.authentication.service.response.UserInfoResponse;
 import com.authentication.service.service.AuthService;
 
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,5 +31,13 @@ public class AuthController {
 			@Valid @RequestBody SignupRequest signUpRequest) { 
 	    return new ResponseEntity<>(
 	    		authService.registerUser(signUpRequest), HttpStatus.CREATED);
+	}
+	
+	@PostMapping("/signin")
+	public ResponseEntity<UserInfoResponse> authenticateUser(
+			@Valid @RequestBody LoginRequest request,
+			HttpServletResponse response) { 
+	    return new ResponseEntity<>(
+	    		authService.authenticateUser(request, response), HttpStatus.OK);
 	}
 }
