@@ -24,6 +24,7 @@ import com.authentication.service.repository.RoleRepository;
 import com.authentication.service.repository.UserRepository;
 import com.authentication.service.request.LoginRequest;
 import com.authentication.service.request.SignupRequest;
+import com.authentication.service.response.MessageResponse;
 import com.authentication.service.response.UserInfoResponse;
 import com.authentication.service.security.jwt.JwtUtils;
 import com.authentication.service.service.AuthService;
@@ -119,5 +120,13 @@ public class AuthServiceImpl implements AuthService {
             userDetails.getEmail(),
             roles
 	    );
+	}
+	
+	@Override
+	public MessageResponse logoutUser(HttpServletResponse response) {
+		ResponseCookie cookie = jwtUtils.getCleanJwtCookie();
+		response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+		
+		return new MessageResponse("You've been signed out");
 	}
 }

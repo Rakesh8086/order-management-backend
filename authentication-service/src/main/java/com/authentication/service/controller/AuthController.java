@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.authentication.service.request.LoginRequest;
 import com.authentication.service.request.SignupRequest;
+import com.authentication.service.response.MessageResponse;
 import com.authentication.service.response.UserInfoResponse;
 import com.authentication.service.service.AuthService;
 
@@ -40,4 +41,11 @@ public class AuthController {
 	    return new ResponseEntity<>(
 	    		authService.authenticateUser(request, response), HttpStatus.OK);
 	}
+	
+	@PostMapping("/signout")
+	public ResponseEntity<MessageResponse> logoutUser(HttpServletResponse response) {
+	    
+		return new ResponseEntity<>(
+	    		authService.logoutUser(response), HttpStatus.OK);
+	} 
 }
