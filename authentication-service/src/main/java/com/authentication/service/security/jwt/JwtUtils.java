@@ -24,6 +24,7 @@ import jakarta.servlet.http.HttpServletRequest;
 
 @Component
 public class JwtUtils {
+	private final UserDetailsImpl userPrincipal = null;
 	private static final Logger logger = LoggerFactory.getLogger(
 			JwtUtils.class);
 
@@ -48,13 +49,13 @@ public class JwtUtils {
 		String jwt = generateTokenFromUserId(userPrincipal.getId(), 
 				userPrincipal.getEmail());
 		ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).
-				path("/api").maxAge(24 * 60 * 60).httpOnly(true).build();
+				path("/").maxAge(24 * 60 * 60).httpOnly(true).build();
 		return cookie;
 	}
 
 	public ResponseCookie getCleanJwtCookie() {
 		ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).
-				path("/api").build();
+				path("/").build();
 		return cookie;
 	}
 
