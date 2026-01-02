@@ -10,6 +10,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import com.authentication.service.exception.IncorrectDetailException;
 import com.authentication.service.exception.SignupFailedException;
 
 @ControllerAdvice
@@ -36,6 +37,12 @@ public class GlobalErrorHandler {
 	@ExceptionHandler(SignupFailedException.class)
     public ResponseEntity<String> handleResourceNotFoundException(SignupFailedException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+	
+	@ExceptionHandler(IncorrectDetailException.class)
+    public ResponseEntity<String> handleIncorrectDetailException(
+    		IncorrectDetailException ex) {
+		return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 }
 

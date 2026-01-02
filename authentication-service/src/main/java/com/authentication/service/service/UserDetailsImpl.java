@@ -37,6 +37,7 @@ public class UserDetailsImpl implements UserDetails {
 	public static UserDetailsImpl build(User user) {
 		List<GrantedAuthority> authorities = new ArrayList<>();
 	    for(Role role : user.getRoles()) {
+	    	// System.out.println("ROLE - " + role);
 	        authorities.add(new SimpleGrantedAuthority(
 	        		role.getName().name()));
 	    }

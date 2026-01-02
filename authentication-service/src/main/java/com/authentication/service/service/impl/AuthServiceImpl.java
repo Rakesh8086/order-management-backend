@@ -3,6 +3,7 @@ package com.authentication.service.service.impl;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,10 +20,12 @@ import org.springframework.stereotype.Service;
 import com.authentication.service.entity.ERole;
 import com.authentication.service.entity.Role;
 import com.authentication.service.entity.User;
+import com.authentication.service.exception.IncorrectDetailException;
 import com.authentication.service.exception.SignupFailedException;
 import com.authentication.service.repository.RoleRepository;
 import com.authentication.service.repository.UserRepository;
 import com.authentication.service.request.LoginRequest;
+import com.authentication.service.request.PasswordChangeRequest;
 import com.authentication.service.request.SignupRequest;
 import com.authentication.service.response.MessageResponse;
 import com.authentication.service.response.UserInfoResponse;
@@ -128,5 +131,28 @@ public class AuthServiceImpl implements AuthService {
 		response.setHeader(HttpHeaders.SET_COOKIE, cookie.toString());
 		
 		return new MessageResponse("You've been signed out");
+	}
+	
+	@Override
+	public String changePassword(PasswordChangeRequest 
+			passwordChangeRequest) {
+		Optional<User> userOptional = userRepository.findByMobileNumber(
+				passwordChangeRequest.getMobileNumber());
+		if(!userOptional.isPresent()) {
+		    throw new IncorrectDetailException(
+		    		"Incorrect mobile number is given");
+		}
+		User user = userOptional.get();
+		if(!encoder.matches(
+				passwordChangeRequest.getExistingPassword(),
+	            user.getPassword())) {
+	        throw new IncorrectDetailException(
+	        		"Existing password is incorrectly given");
+	    }
+		user.setPassword(encoder.encode(
+				passwordChangeRequest.getNewPassword()));
+		userRepository.save(user);
+
+	    return "Password changed successfully";
 	}
 }
