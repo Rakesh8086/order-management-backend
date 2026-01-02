@@ -1,12 +1,16 @@
 package com.authentication.service.security.jwt;
 
 import java.security.Key;
+import java.util.Collection;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.WebUtils;
 
@@ -47,7 +51,7 @@ public class JwtUtils {
 
 	public ResponseCookie generateJwtCookie(UserDetailsImpl userPrincipal) {
 		String jwt = generateTokenFromUserId(userPrincipal.getId(), 
-				userPrincipal.getEmail());
+				userPrincipal.getEmail(), userPrincipal.getAuthorities());
 		ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).
 				path("/").maxAge(24 * 60 * 60).httpOnly(true).build();
 		return cookie;
@@ -90,13 +94,18 @@ public class JwtUtils {
 	}
 
 	public String generateTokenFromUserId(Long userId, 
-			String email) {
-		return Jwts.builder()
-				.setSubject(String.valueOf(userId))
-				.claim("email", email)
-				.setIssuedAt(new Date())
-				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-				.signWith(key(), SignatureAlgorithm.HS256)
-				.compact();
+			String email, Collection<? extends GrantedAuthority> authorities) {
+		List<String> roles = authorities.stream()
+            .map(GrantedAuthority::getAuthority)
+            .collect(Collectors.toList());
+
+    	return Jwts.builder()
+            .setSubject(String.valueOf(userId))
+            .claim("email", email)
+            .claim("roles", roles) 
+            .setIssuedAt(new Date())
+            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+            .signWith(key(), SignatureAlgorithm.HS256)
+            .compact();
 	}
 }

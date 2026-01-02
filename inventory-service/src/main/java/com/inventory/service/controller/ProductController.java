@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -29,13 +30,15 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-
+    
     @PostMapping("/add")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<Long> addProduct(@Valid @RequestBody ProductRequest request) {
         return new ResponseEntity<>(productService.createProduct(request), HttpStatus.CREATED);
     }
     
     @GetMapping("/all")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllProducts(){
     	ResponseEntity<List<ProductResponse>> allProducts =  
     			new ResponseEntity<>(
@@ -46,6 +49,7 @@ public class ProductController {
     }
     
     @GetMapping("/all/admin")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductResponseAdmin>> 
     getAllProductsForAdmin(){
     	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
@@ -57,6 +61,7 @@ public class ProductController {
     }
     
     @PutMapping("/update/{id}")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<String> updateProduct(
     		@PathVariable Long id, @Valid @RequestBody ProductRequest request){
     	productService.updateProduct(id, request);
@@ -64,6 +69,7 @@ public class ProductController {
     }
     
     @DeleteMapping("/delete/{id}")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<String> softDeleteProduct(
     		@PathVariable Long id){
     	productService.softDeleteProduct(id);
@@ -72,6 +78,7 @@ public class ProductController {
     }
     
     @GetMapping("/id/{id}")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<ProductResponseAdmin> 
     getById(@PathVariable Long id){
     	ResponseEntity<ProductResponseAdmin> Product =  
@@ -83,6 +90,7 @@ public class ProductController {
     }
     
     @GetMapping("/name/{name}")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllByName(
     		@PathVariable String name){
     	ResponseEntity<List<ProductResponse>> allProducts =  
@@ -94,6 +102,7 @@ public class ProductController {
     }
     
     @GetMapping("/filter")
+    @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllByAdvancedFilter(
     		@RequestBody AdvancedFilterRequest request){
     	ResponseEntity<List<ProductResponse>> allProducts =  
@@ -105,6 +114,7 @@ public class ProductController {
     }
     
     @GetMapping("/lowStock")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductResponseAdmin>> getLowStockProducts(
     		@RequestBody AdvancedFilterRequest request){
     	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
@@ -116,6 +126,7 @@ public class ProductController {
     }
     
     @PatchMapping("/update/{id}/stock")
+    @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<String> updateStock(
 	    @PathVariable Long id, 
 	    @RequestParam Integer quantityChange) { 
