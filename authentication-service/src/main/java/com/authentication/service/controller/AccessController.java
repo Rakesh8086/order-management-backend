@@ -3,7 +3,6 @@ package com.authentication.service.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -18,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/access")
-@CrossOrigin(origins = "*", maxAge = 3600) 
+// @CrossOrigin(origins = "*", maxAge = 3600) 
 public class AccessController {
 	@Autowired
 	private final AuthService authService;

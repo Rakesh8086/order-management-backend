@@ -53,13 +53,15 @@ public class JwtUtils {
 		String jwt = generateTokenFromUserId(userPrincipal.getId(), 
 				userPrincipal.getEmail(), userPrincipal.getAuthorities());
 		ResponseCookie cookie = ResponseCookie.from(jwtCookie, jwt).
-				path("/").maxAge(24 * 60 * 60).httpOnly(true).build();
+				path("/").maxAge(24 * 60 * 60).httpOnly(true)
+				.secure(true).sameSite("None").build();
 		return cookie;
 	}
 
 	public ResponseCookie getCleanJwtCookie() {
-		ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).
-				path("/").build();
+		ResponseCookie cookie = ResponseCookie.from(jwtCookie, "").
+				path("/").maxAge(0).httpOnly(true).secure(true)
+	            .sameSite("None").build();
 		return cookie;
 	}
 

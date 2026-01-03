@@ -42,7 +42,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 			throws ServletException, IOException {
 		String requestUri = request.getRequestURI();
 		String pathToCheck = requestUri;
-		System.out.println(requestUri);
+		System.out.println("^^^^^^^^^^ " + requestUri);
 		if (pathToCheck.startsWith(SERVICE_ID_PREFIX)) {
 			// Strip the /authentication-service prefix
 			pathToCheck = pathToCheck.substring(SERVICE_ID_PREFIX.length());
@@ -60,7 +60,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 		try {
 			String jwt = parseJwt(request);
-			if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+			if (jwt == null) {
+				filterChain.doFilter(request, response);
+			    return;
+			}
+			if (jwtUtils.validateJwtToken(jwt)) {
 				String username = jwtUtils.getUserNameFromJwtToken(jwt);
 				Optional<User> userOptional = userRepository.findById(Long.valueOf(username));
 			    String mobileNumber = userOptional.get().getMobileNumber();
@@ -77,7 +81,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 			}
-		} catch (Exception e) {
+		} 
+		catch (Exception e) {
 			logger.error("Cannot set user authentication: {}", e);
 		}
 
