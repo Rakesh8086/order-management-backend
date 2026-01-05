@@ -67,8 +67,7 @@ public class OrderServiceImpl implements OrderService {
             if(item.getQuantity() > product.getCurrentStock()) {
                 throw new InsufficientStockException(
                 		"only " + product.getCurrentStock() +
-                		" available for " + product.getName() + 
-                		" for the brand " + product.getBrand());
+                		" available for the product Id " + product.getId());
             }
             OrderItem orderItem = new OrderItem();
             orderItem.setProductId(item.getProductId());
@@ -212,6 +211,7 @@ public class OrderServiceImpl implements OrderService {
     private OrderResponse mapEntityToResponse(Order order) {
     	OrderResponse response = new OrderResponse();
     	response.setId(order.getId());
+		response.setUserId(order.getUserId());
     	response.setOrderDate(order.getOrderDate().toLocalDate());
     	response.setDeliveryDate(order.getOrderDate().plusDays(
     					order.getDeliveryWithinDays()).toLocalDate());

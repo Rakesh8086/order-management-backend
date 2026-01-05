@@ -71,7 +71,7 @@ public class BillingServiceImpl implements BillingService {
     @Override
     public List<InvoiceResponse> getAllInvoicesByUserId(Long userId){
     	List<Invoice> allInvoice = invoiceRepository.
-    			findByUserId(9876L);
+    			findByUserId(userId);
     	List<InvoiceResponse> allResponse = new ArrayList<>();
     	for(Invoice invoice: allInvoice) {
     		InvoiceResponse response = mapEntityToResponse(invoice);

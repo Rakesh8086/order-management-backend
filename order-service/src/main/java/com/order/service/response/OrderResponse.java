@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class OrderResponse {
 	private Long id;
+	private Long userId;
 	private LocalDate orderDate;
 	private LocalDate deliveryDate;
 	private Double totalAmount;

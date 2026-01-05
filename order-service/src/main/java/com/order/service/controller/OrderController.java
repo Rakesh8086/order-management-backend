@@ -47,11 +47,11 @@ public class OrderController {
 				HttpStatus.OK);
 	}
 	
-	@GetMapping("/history/{id}")
+	@GetMapping("/history")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
 	public ResponseEntity<List<OrderResponse>> 
-	getOrderHistory(@PathVariable Long id){
-		return new ResponseEntity<>(orderService.getOrderHistory(id), 
+	getOrderHistory(@RequestHeader("X-Authenticated-UserId") String userId){
+		return new ResponseEntity<>(orderService.getOrderHistory(Long.valueOf(userId)), 
 				HttpStatus.OK);
 	}
 	
@@ -62,7 +62,7 @@ public class OrderController {
 	    return ResponseEntity.ok("Order cancelled.");
 	}
 	
-	@GetMapping("/admin/filter")
+	@PostMapping("/admin/filter")
 	@PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
 	public ResponseEntity<List<OrderResponse>> 
 	getAllOrdersByFilters(@RequestBody AdminSearchFilter filter){
