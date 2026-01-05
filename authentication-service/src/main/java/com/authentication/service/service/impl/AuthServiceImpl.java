@@ -149,6 +149,10 @@ public class AuthServiceImpl implements AuthService {
 	        throw new IncorrectDetailException(
 	        		"Existing password is incorrectly given");
 	    }
+		if(!passwordChangeRequest.getMobileNumber().equals(user.getMobileNumber())){
+			throw new IncorrectDetailException(
+	        		"Mobile Number is incorrectly given");
+		}
 		user.setPassword(encoder.encode(
 				passwordChangeRequest.getNewPassword()));
 		userRepository.save(user);
