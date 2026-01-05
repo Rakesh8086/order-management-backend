@@ -101,13 +101,14 @@ public class JwtUtils {
             .map(GrantedAuthority::getAuthority)
             .collect(Collectors.toList());
 
-    	return Jwts.builder()
-            .setSubject(String.valueOf(userId))
-            .claim("email", email)
-            .claim("roles", roles) 
-            .setIssuedAt(new Date())
-            .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-            .signWith(key(), SignatureAlgorithm.HS256)
-            .compact();
+		return Jwts.builder()
+				.setSubject(String.valueOf(userId))
+				.claim("email", email)
+				.claim("roles", roles)
+				.claim("userId", userId)
+				.setIssuedAt(new Date())
+				.setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
+				.signWith(key(), SignatureAlgorithm.HS256)
+				.compact();
 	}
 }

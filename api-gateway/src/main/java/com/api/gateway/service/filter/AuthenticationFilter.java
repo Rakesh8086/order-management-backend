@@ -39,6 +39,12 @@ public class AuthenticationFilter implements GlobalFilter, Ordered {
             if(!jwtUtils.validateJwtToken(jwt)) {
                 return this.onError(exchange, "Invalid or Expired JWT token", HttpStatus.UNAUTHORIZED);
             }
+            String userId = jwtUtils.getUserIdFromJwtToken(jwt); 
+            ServerHttpRequest modifiedRequest = exchange.getRequest().mutate()
+                    .header("X-Authenticated-UserId", userId)
+                    .build();
+            // System.out.println("********Gateway injecting userId: " + userId);
+            return chain.filter(exchange.mutate().request(modifiedRequest).build());
         }
         // valid request or public request
         return chain.filter(exchange);

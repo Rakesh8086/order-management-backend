@@ -101,7 +101,7 @@ public class ProductController {
     	return allProducts;
     }
     
-    @GetMapping("/filter")
+    @PostMapping("/filter")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllByAdvancedFilter(
     		@RequestBody AdvancedFilterRequest request){
@@ -113,7 +113,7 @@ public class ProductController {
     	return allProducts;
     }
     
-    @GetMapping("/lowStock")
+    @PostMapping("/lowstock")
     @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductResponseAdmin>> getLowStockProducts(
     		@RequestBody AdvancedFilterRequest request){

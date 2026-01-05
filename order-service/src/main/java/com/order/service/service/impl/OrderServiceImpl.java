@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService {
     // @Transactional 
     public Long placeOrder(OrderRequest request, Long userId) {
         Order order = new Order();
-        order.setUserId(9876L);
+        order.setUserId(userId);
         order.setAddress(request.getAddress());
         order.setDeliveryWithinDays(request.getDeliveryWithinDays());
         order.setStatus(OrderStatus.ORDERED);
