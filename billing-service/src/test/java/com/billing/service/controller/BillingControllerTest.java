@@ -87,7 +87,8 @@ class BillingControllerTest {
     void getAllInvoicesByUserId_success() throws Exception {
         when(billingService.getAllInvoicesByUserId(10L))
                 .thenReturn(List.of(new InvoiceResponse()));
-        mockMvc.perform(get("/api/billing/history/10"))
+        mockMvc.perform(get("/api/billing/history")
+        			.header("X-Authenticated-UserId", "10")) 
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(1));
     }

@@ -44,24 +44,18 @@ public class BillingController {
 	@GetMapping("/order/{orderId}")
 	@PreAuthorize("hasRole('FINANCE_OFFICER')")
     public ResponseEntity<InvoiceResponse> getByOrderId(
-    		@PathVariable Long orderId) {
-		ResponseEntity<InvoiceResponse> invoice =  
-    			new ResponseEntity<>(
+    		@PathVariable Long orderId) {  
+    		return new ResponseEntity<>(
     					billingService.getByOrderId(orderId), 
     			HttpStatus.OK);
-    	
-    	return invoice;
     }
 	
 	@GetMapping("/history")
 	@PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<InvoiceResponse>> getAllInvoicesByUserId(
-    		@RequestHeader("X-Authenticated-UserId") String userId) {
-		ResponseEntity<List<InvoiceResponse>> invoices =  
-    			new ResponseEntity<>(
+    		@RequestHeader("X-Authenticated-UserId") String userId) {  
+    		return new ResponseEntity<>(
     					billingService.getAllInvoicesByUserId(Long.valueOf(userId)), 
     			HttpStatus.OK);
-    	
-    	return invoices;
     }
 }

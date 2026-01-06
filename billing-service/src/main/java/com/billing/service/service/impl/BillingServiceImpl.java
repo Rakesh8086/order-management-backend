@@ -63,9 +63,8 @@ public class BillingServiceImpl implements BillingService {
     				+ "id " + orderId);
     	}
     	Invoice invoice = invoiceOptional.get();
-    	InvoiceResponse response = mapEntityToResponse(invoice);
     	
-    	return response;
+    	return mapEntityToResponse(invoice);
     }
     
     @Override
