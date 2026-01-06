@@ -81,7 +81,7 @@ public class OrderServiceImpl implements OrderService {
             productClient.updateStock(
             		item.getProductId(), -item.getQuantity());
         }
-        totalAmount += DeliveryFee(request.getDeliveryWithinDays());
+        totalAmount += deliveryFee(request.getDeliveryWithinDays());
         
         order.setItems(orderItems);
         order.setTotalAmount(totalAmount);
@@ -126,9 +126,8 @@ public class OrderServiceImpl implements OrderService {
     				"Order not found with id: "+ id);
     	}
     	Order order = orderOptional.get();
-    	OrderResponse response = mapEntityToResponse(order);
     	
-    	return response;
+    	return mapEntityToResponse(order);
     }
     
     @Override
@@ -238,7 +237,7 @@ public class OrderServiceImpl implements OrderService {
     	return response;
     }
     
-    private Double DeliveryFee(Integer deliveryWithinDays) {
+    private Double deliveryFee(Integer deliveryWithinDays) {
     	if(deliveryWithinDays == 1) {
     		return 100.0;
     	}

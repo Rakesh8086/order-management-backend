@@ -55,6 +55,7 @@ class OrderControllerTest {
         when(orderService.placeOrder(any(), any()))
                 .thenReturn(10L);
         mockMvc.perform(post("/api/orders/order")
+        		.header("X-Authenticated-UserId", "5")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderRequest)))
                 .andExpect(status().isCreated())
@@ -94,7 +95,7 @@ class OrderControllerTest {
         AdminSearchFilter filter = new AdminSearchFilter();
         when(orderService.getAllOrdersByFilters(any()))
                 .thenReturn(List.of(new OrderResponse()));
-        mockMvc.perform(get("/api/orders/admin/filter")
+        mockMvc.perform(post("/api/orders/admin/filter")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(filter)))
                 .andExpect(status().isOk())
