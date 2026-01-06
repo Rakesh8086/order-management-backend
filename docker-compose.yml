@@ -20,7 +20,6 @@ services:
       - microservice-network
 
   config-server:
-    build: ./config-server
     image: config-server:latest
     container_name: config-server
     ports:
@@ -31,7 +30,6 @@ services:
       - microservice-network
 
   eureka-server:
-    build: ./service-registry
     image: service-registry:latest
     container_name: eureka-server
     ports:
@@ -48,7 +46,6 @@ services:
       - microservice-network
 
   api-gateway:
-    build: ./api-gateway
     image: api-gateway:latest
     container_name: api-gateway
     ports:
@@ -66,7 +63,6 @@ services:
       - microservice-network
 
   authentication-service:
-    build: ./authentication-service
     image: authentication-service:latest
     container_name: authentication-service
     ports:
@@ -86,7 +82,6 @@ services:
       - microservice-network
 
   inventory-service:
-    build: ./inventory-service
     image: inventory-service:latest
     container_name: inventory-service
     ports:
@@ -106,7 +101,6 @@ services:
       - microservice-network
 
   order-service:
-    build: ./order-service
     image: order-service:latest
     container_name: order-service
     ports:
@@ -126,7 +120,6 @@ services:
       - microservice-network
 
   billing-service:
-    build: ./billing-service
     image: billing-service:latest
     container_name: billing-service
     ports:
@@ -146,7 +139,6 @@ services:
       - microservice-network
 
   notification-service:
-    build: ./notification-service
     image: notification-service:latest
     container_name: notification-service
     ports:
