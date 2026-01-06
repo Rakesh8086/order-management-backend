@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('Cleanup Old Image') {
+            steps {
+                bat 'docker rmi inventory-service:latest || ver > nul'
+            }
+        }
+        stage('Build Artifact') {
+            steps {
+                dir('inventory-service') {
+                    bat 'mvn package'
+                }
+            }
+        }
+        stage('SonarCloud Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    dir('inventory-service') {
+                        // properties already in pom
+                        bat "mvn sonar:sonar -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('inventory-service') {
+                    bat 'docker build -t inventory-service:latest .' 
+                }
+            }
+        }
+    }
+}
