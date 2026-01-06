@@ -40,24 +40,17 @@ public class ProductController {
     @GetMapping("/all")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllProducts(){
-    	ResponseEntity<List<ProductResponse>> allProducts =  
-    			new ResponseEntity<>(
-    			productService.getAllProducts(), 
+    		return new ResponseEntity<>(productService.getAllProducts(), 
     			HttpStatus.OK);
-    	
-    	return allProducts;
     }
     
     @GetMapping("/all/admin")
     @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductResponseAdmin>> 
     getAllProductsForAdmin(){
-    	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
-    			new ResponseEntity<>(
+    		return new ResponseEntity<>(
     			productService.getAllProductsForAdmin(), 
     			HttpStatus.OK);
-    	
-    	return allProducts;
     }
     
     @PutMapping("/update/{id}")
@@ -81,48 +74,36 @@ public class ProductController {
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<ProductResponseAdmin> 
     getById(@PathVariable Long id){
-    	ResponseEntity<ProductResponseAdmin> Product =  
-    			new ResponseEntity<>(
-    			productService.getById(id), 
+    		return new ResponseEntity<>(productService.getById(id), 
     			HttpStatus.OK);
-    	
-    	return Product;
     }
     
     @GetMapping("/name/{name}")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllByName(
-    		@PathVariable String name){
-    	ResponseEntity<List<ProductResponse>> allProducts =  
-    			new ResponseEntity<>(
+    		@PathVariable String name){  
+    		return new ResponseEntity<>(
     			productService.getAllByName(name), 
     			HttpStatus.OK);
-    	
-    	return allProducts;
     }
     
     @PostMapping("/filter")
     @PreAuthorize("hasRole('CUSTOMER') or hasRole('WAREHOUSE_MANAGER') or hasRole('FINANCE_OFFICER')")
     public ResponseEntity<List<ProductResponse>> getAllByAdvancedFilter(
     		@RequestBody AdvancedFilterRequest request){
-    	ResponseEntity<List<ProductResponse>> allProducts =  
-    			new ResponseEntity<>(
+    		return new ResponseEntity<>(
     			productService.getAllByAdvancedFilter(request), 
     			HttpStatus.OK);
-    	
-    	return allProducts;
     }
     
     @PostMapping("/lowstock")
     @PreAuthorize("hasRole('WAREHOUSE_MANAGER')")
     public ResponseEntity<List<ProductResponseAdmin>> getLowStockProducts(
     		@RequestBody AdvancedFilterRequest request){
-    	ResponseEntity<List<ProductResponseAdmin>> allProducts =  
-    			new ResponseEntity<>(
+    	return new ResponseEntity<>(
     			productService.getLowStockProducts(request), 
     			HttpStatus.OK);
     	
-    	return allProducts;
     }
     
     @PatchMapping("/update/{id}/stock")

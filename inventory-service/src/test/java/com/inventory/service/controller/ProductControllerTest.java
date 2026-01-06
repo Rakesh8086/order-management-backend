@@ -125,7 +125,7 @@ class ProductControllerTest {
         AdvancedFilterRequest filter = new AdvancedFilterRequest();
         when(productService.getAllByAdvancedFilter(any()))
                 .thenReturn(List.of(new ProductResponse()));
-        mockMvc.perform(get("/api/products/filter")
+        mockMvc.perform(post("/api/products/filter")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(filter)))
                 .andExpect(status().isOk())
@@ -137,7 +137,7 @@ class ProductControllerTest {
         AdvancedFilterRequest filter = new AdvancedFilterRequest();
         when(productService.getLowStockProducts(any()))
                 .thenReturn(List.of(new ProductResponseAdmin()));
-        mockMvc.perform(get("/api/products/lowStock")
+        mockMvc.perform(post("/api/products/lowstock")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(filter)))
                 .andExpect(status().isOk())
