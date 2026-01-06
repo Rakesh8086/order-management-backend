@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('Cleanup Old Image') {
+            steps {
+                bat 'docker rmi billing-service:latest || ver > nul'
+            }
+        }
+        stage('Build Artifact') {
+            steps {
+                dir('billing-service') {
+                    bat 'mvn package'
+                }
+            }
+        }
+        stage('SonarCloud Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    dir('billing-service') {
+                        // properties already in pom
+                        bat "mvn sonar:sonar -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('billing-service') {
+                    bat 'docker build -t billing-service:latest .' 
+                }
+            }
+        }
+    }
+}
