@@ -30,6 +30,7 @@ import com.order.service.response.ProductResponseAdmin;
 import com.order.service.service.OrderService;
 
 import feign.FeignException;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -43,6 +44,7 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     // @Transactional 
+	@CircuitBreaker(name = "billingService", fallbackMethod = "billingFallback")
     public Long placeOrder(OrderRequest request, Long userId) {
         Order order = new Order();
         order.setUserId(userId);
@@ -59,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
         		product = productClient.getById(
         						item.getProductId());
         	} 
-        	catch(FeignException.NotFound e) {
+        	catch(Exception e) {
         	    throw new ResourceNotFoundException(
         	    		"Product not found with Id: " + 
         	    				item.getProductId());
@@ -252,5 +254,9 @@ public class OrderServiceImpl implements OrderService {
     	}
     	
     	return 40.0;
+    }
+
+	public Long billingFallback(InvoiceRequest request, Throwable t) {
+        throw new ServiceDownException("Billing service is down");
     }
 }
