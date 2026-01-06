@@ -1,0 +1,34 @@
+pipeline {
+    agent any
+    stages {
+        stage('Cleanup Old Image') {
+            steps {
+                bat 'docker rmi order-service:latest || ver > nul'
+            }
+        }
+        stage('Build Artifact') {
+            steps {
+                dir('order-service') {
+                    bat 'mvn package'
+                }
+            }
+        }
+        stage('SonarCloud Analysis') {
+            steps {
+                withCredentials([string(credentialsId: 'SONAR_TOKEN', variable: 'SONAR_TOKEN')]) {
+                    dir('order-service') {
+                        // properties already in pom
+                        bat "mvn sonar:sonar -Dsonar.token=${SONAR_TOKEN}"
+                    }
+                }
+            }
+        }
+        stage('Build Docker Image') {
+            steps {
+                dir('order-service') {
+                    bat 'docker build -t order-service:latest .' 
+                }
+            }
+        }
+    }
+}
